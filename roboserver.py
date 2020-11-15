@@ -38,7 +38,7 @@ import socket
 import threading
 
 # These are sensible values for  RaspberryPi ad-hoc network
-HOST   = '192.168.2.2'
+HOST   = '192.168.87.32'
 PORT    = 20000
 BUFSIZE = 100
 
