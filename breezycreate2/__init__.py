@@ -38,7 +38,7 @@ class Robot(object):
         '''
         self.robot = _Create2(port, baud)
         self.robot.start()
-        self.robot.safe()
+        self.robot.full()
 
     def close(self):
         '''
