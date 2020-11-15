@@ -36,7 +36,7 @@ import pygame
 # These should agree with the values in the server script!
 #host = '192.168.2.2'
 #host = '137.113.118.162'
-host = '192.168.2.2'
+host = '192.168.87.32'
 port = 20000
 
 # Index of base axis of controller
