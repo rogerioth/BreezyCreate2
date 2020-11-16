@@ -83,13 +83,14 @@ while True:
     # Force joystick polling
     pygame.event.pump()    
     
-    # Pressing autopilot button turns on autopilot; other buttons turn it off
-    for k in range(controller.get_numbuttons()):
-        if controller.get_button(k):
-            if k == AUTOPILOT_BUTTON:
-                autopilot = True
-            else:
-                autopilot = False
+    autopilot = False
+    # # Pressing autopilot button turns on autopilot; other buttons turn it off
+    # for k in range(controller.get_numbuttons()):
+    #     if controller.get_button(k):
+    #         if k == AUTOPILOT_BUTTON:
+    #             autopilot = True
+    #         else:
+    #             autopilot = False
     
     # Grab joystick axis values (forward comes in negative)
     axis_x =   controller.get_axis(AXIS1)
@@ -114,8 +115,8 @@ while True:
 
     print('X: ' + str(axis_x) + '; Y:' + str(axis_y) + '  -  X2:' + str(r_axis_x) + '; Y2:' + str(r_axis_y))
     # Create a fixed-length text message to send to the server
-    #msg = '%+2.2f %+2.2f %d*' % (axis_x, axis_y, autopilot)
+    msg = '%+2.2f %+2.2f %d %+2.2f %+2.2f*' % (axis_x, axis_y, autopilot, r_axis_x, r_axis_y)
 
     # Send the message over the socket
-    #sock.send(msg.encode())
+    sock.send(msg.encode())
 

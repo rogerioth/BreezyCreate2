@@ -36,11 +36,18 @@ from breezycreate2 import Robot
 from time import sleep
 import socket
 import threading
+import RPi.GPIO as GPIO
 
 # These are sensible values for  RaspberryPi ad-hoc network
 HOST   = '192.168.87.32'
 PORT    = 20000
 BUFSIZE = 100
+
+servoPIN = 17
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(servoPIN, GPIO.OUT)
+p = GPIO.PWM(servoPIN, 50) # GPIO 17 for PWM with 50Hz
+p.start(2.5) # Initialization
 
 def threadfunc(values):
 
@@ -50,11 +57,11 @@ def threadfunc(values):
     while True:
 
         # Convert [-1,+1] axis to [-500,+500] turn speed
-        if abs(values[0]) > abs(values[1]):
-            # Only turn
-            bot.setTurnSpeed(500*values[0])
-        else:
-            bot.setForwardSpeed(500*values[1])
+        # if abs(values[0]) > abs(values[1]):
+        #     # Only turn
+        #     bot.setTurnSpeed(500*values[0])
+        # else:
+        #     bot.setForwardSpeed(500*values[1])
 
         # Yield to main thread
         sleep(.01)
@@ -81,7 +88,7 @@ if __name__ == '__main__':
     print('Accepted connection')
 
     # These values will be shared with the command-listener thread
-    values = [0,0,0]
+    values = [0,0,0,0,0]
 
     # Launch command listener on another thread
     thread = threading.Thread(target=threadfunc, args = (values,))
@@ -101,3 +108,5 @@ if __name__ == '__main__':
                 values[0] = float(parts[0])
                 values[1] = float(parts[1])
                 values[2] = int(parts[2])
+                values[3] = float(parts[3])
+                values[4] = float(parts[4])
