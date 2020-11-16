@@ -59,8 +59,8 @@ py.start(py_duty) # Initialization
 def handleTurret(turret_offset_x, turret_offset_y):
     global px_duty
     global py_duty
-    px_duty = px_duty + turret_offset_x
-    py_duty = py_duty + turret_offset_y
+    px_duty = px_duty + (turret_offset_x / 10)
+    py_duty = py_duty + (turret_offset_y / 10)
     print('X:' + str(px_duty) + '; Y: ' + str(py_duty))
     px.ChangeDutyCycle(px_duty)
     py.ChangeDutyCycle(py_duty)
