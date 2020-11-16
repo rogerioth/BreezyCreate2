@@ -93,11 +93,11 @@ def handleTurret(turret_offset_x, turret_offset_y):
     attemptOffset(False, (turret_offset_y / 10))
     #print('Turret - X:' + str(px_duty) + '; Y: ' + str(py_duty))
 
-    if turret_offset_x != 0.0:
+    if abs(turret_offset_x) > 0.1:
         print('Turret X offset: ' + str(turret_offset_x))
         px.ChangeDutyCycle(px_duty)
     
-    if turret_offset_y != 0.0:
+    if abs(turret_offset_y) > 0.1:
         print('Turret Y offset: ' + str(turret_offset_y))
         py.ChangeDutyCycle(py_duty)
 
