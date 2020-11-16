@@ -366,13 +366,12 @@ class _Create2(object):
 
         #Check to make sure we are getting sent valid velocity/radius.
         
-
         if velocity >= -500 and velocity <= 500:
             v = int(velocity) & 0xffff
             #Convert 16bit velocity to Hex
         else:
             noError = False
-            raise _ROIDataByteError("Invalid velocity input")
+            raise _ROIDataByteError("Invalid velocity input: " + str(velocity))
         
         if radius == 32767 or radius == -1 or radius == 1:
             #Special case radius
