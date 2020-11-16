@@ -44,6 +44,10 @@ PORT        = 20000
 BUFSIZE     = 100
 servoPIN_X  = 17
 servoPIN_Y  = 18
+PX_MAX      = 12.8
+PX_MIN      = 0.3
+PY_MAX      = 12
+PY_MIN      = 7
 
 px_duty     = 2.5
 py_duty     = 12
@@ -56,12 +60,36 @@ px.start(px_duty) # Initialization
 py = GPIO.PWM(servoPIN_Y, 50) # GPIO 18 for PWM with 50Hz
 py.start(py_duty) # Initialization
 
+def attemptOffset(isX, offset):
+    global px_duty
+    global py_duty
+
+    if isX:
+        predicted_x = px_duty + offset
+        if predicted_x > PX_MAX:
+            px_duty = PX_MAX
+        elif predicted_x < PX_MIN:
+            px_duty = PX_MIN
+        else:
+            px_duty = predicted_x
+    else:
+        predicted_y = py_duty + offset
+        if predicted_y > PY_MAX:
+            py_duty = PY_MAX
+        elif predicted_y < PY_MIN:
+            py_duty = PY_MIN
+        else:
+            py_duty = predicted_y
+
+
 def handleTurret(turret_offset_x, turret_offset_y):
     global px_duty
     global py_duty
-    px_duty = px_duty + (turret_offset_x / 10)
-    py_duty = py_duty + (turret_offset_y / 10)
-    print('X:' + str(px_duty) + '; Y: ' + str(py_duty))
+
+    attemptOffset(True,  (turret_offset_x / 10))
+    attemptOffset(False, (turret_offset_y / 10))
+    print('Turret - X:' + str(px_duty) + '; Y: ' + str(py_duty))
+
     px.ChangeDutyCycle(px_duty)
     py.ChangeDutyCycle(py_duty)
     sleep(0.05)
