@@ -62,6 +62,9 @@ def handleTurret(turret_offset_x, turret_offset_y):
     px_duty = px_duty + turret_offset_x
     py_duty = py_duty + turret_offset_y
     print('X:' + str(px_duty) + '; Y: ' + str(py_duty))
+    px.ChangeDutyCycle(px_duty)
+    py.ChangeDutyCycle(py_duty)
+    sleep(0.05)
 
 def threadfunc(values):
 
@@ -70,12 +73,12 @@ def threadfunc(values):
     
     while True:
 
-        # Convert [-1,+1] axis to [-500,+500] turn speed
-        # if abs(values[0]) > abs(values[1]):
-        #     # Only turn
-        #     bot.setTurnSpeed(500*values[0])
-        # else:
-        #     bot.setForwardSpeed(500*values[1])
+        #Convert [-1,+1] axis to [-500,+500] turn speed
+        if abs(values[0]) > abs(values[1]):
+            # Only turn
+            bot.setTurnSpeed(500*values[0])
+        else:
+            bot.setForwardSpeed(500*values[1])
 
         handleTurret(values[3], values[4])
 
