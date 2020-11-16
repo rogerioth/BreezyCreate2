@@ -52,7 +52,8 @@ PY_MIN      = 7
 px_duty     = 2.5
 py_duty     = 12
 
-MOTOR_MAX_SPEED = 400
+MOTOR_MAX_ROTATION_SPEED    = 400
+MOTOR_MAX_FORWARD_SPEED     = 350
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(servoPIN_X, GPIO.OUT)
@@ -92,9 +93,13 @@ def handleTurret(turret_offset_x, turret_offset_y):
     attemptOffset(False, (turret_offset_y / 10))
     print('Turret - X:' + str(px_duty) + '; Y: ' + str(py_duty))
 
-    px.ChangeDutyCycle(px_duty)
-    py.ChangeDutyCycle(py_duty)
-    sleep(0.05)
+    if turret_offset_x != 0.0:
+        px.ChangeDutyCycle(px_duty)
+    
+    if turret_offset_y != 0.0:
+        py.ChangeDutyCycle(py_duty)
+
+    sleep(0.01)
 
 def threadfunc(values):
 
@@ -106,9 +111,9 @@ def threadfunc(values):
         #Convert [-1,+1] axis to [-500,+500] turn speed
         if abs(values[0]) > abs(values[1]):
             # Only turn
-            bot.setTurnSpeed(MOTOR_MAX_SPEED*values[0])
+            bot.setTurnSpeed(MOTOR_MAX_ROTATION_SPEED*values[0])
         else:
-            bot.setForwardSpeed(MOTOR_MAX_SPEED*values[1])
+            bot.setForwardSpeed(MOTOR_MAX_FORWARD_SPEED*values[1])
 
         handleTurret(values[3], values[4])
 
