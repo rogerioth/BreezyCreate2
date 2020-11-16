@@ -39,15 +39,29 @@ import threading
 import RPi.GPIO as GPIO
 
 # These are sensible values for  RaspberryPi ad-hoc network
-HOST   = '192.168.87.32'
-PORT    = 20000
-BUFSIZE = 100
+HOST        = '192.168.87.32'
+PORT        = 20000
+BUFSIZE     = 100
+servoPIN_X  = 17
+servoPIN_Y  = 18
 
-servoPIN = 17
+px_duty     = 2.5
+py_duty     = 2.5
+
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(servoPIN, GPIO.OUT)
-p = GPIO.PWM(servoPIN, 50) # GPIO 17 for PWM with 50Hz
-p.start(2.5) # Initialization
+GPIO.setup(servoPIN_X, GPIO.OUT)
+GPIO.setup(servoPIN_Y, GPIO.OUT)
+px = GPIO.PWM(servoPIN_X, 50) # GPIO 17 for PWM with 50Hz
+px.start(px_duty) # Initialization
+py = GPIO.PWM(servoPIN_Y, 50) # GPIO 18 for PWM with 50Hz
+py.start(py_duty) # Initialization
+
+def handleTurret(turret_offset_x, turret_offset_y):
+    global px_duty
+    global py_duty
+    px_duty = px_duty + turret_offset_x
+    py_duty = py_duty + turret_offset_y
+    print('X:' + str(px_duty) + '; Y: ' + str(py_duty))
 
 def threadfunc(values):
 
@@ -62,6 +76,7 @@ def threadfunc(values):
         #     bot.setTurnSpeed(500*values[0])
         # else:
         #     bot.setForwardSpeed(500*values[1])
+
 
         # Yield to main thread
         sleep(.01)
