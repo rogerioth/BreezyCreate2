@@ -46,7 +46,7 @@ servoPIN_X  = 17
 servoPIN_Y  = 18
 
 px_duty     = 2.5
-py_duty     = 2.5
+py_duty     = 12
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(servoPIN_X, GPIO.OUT)
