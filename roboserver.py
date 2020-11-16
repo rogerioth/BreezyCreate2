@@ -77,6 +77,7 @@ def threadfunc(values):
         # else:
         #     bot.setForwardSpeed(500*values[1])
 
+        handleTurret(values[3], values[4])
 
         # Yield to main thread
         sleep(.01)
