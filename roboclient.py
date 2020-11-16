@@ -43,6 +43,14 @@ port = 20000
 AXIS1 = 0
 AXIS2 = 1
 
+AXIS3 = 2
+AXIS4 = 3
+
+AXIS1_THRESHOLD = 0.13
+AXIS2_THRESHOLD = 0.09
+AXIS3_THRESHOLD = 0.10
+AXIS4_THRESHOLD = 0.05
+
 # Index of autopilot button
 AUTOPILOT_BUTTON = 0
 
@@ -86,10 +94,28 @@ while True:
     # Grab joystick axis values (forward comes in negative)
     axis_x =   controller.get_axis(AXIS1)
     axis_y =  -controller.get_axis(AXIS2)
+
+    # Right analog stick
+    r_axis_x =  controller.get_axis(AXIS3)
+    r_axis_y = -controller.get_axis(AXIS4)
     
+    # X threshold: 0.13
+    # Y threshold: 0.03
+
+    if (abs(axis_x)) < AXIS1_THRESHOLD:
+        axis_x = 0
+    if (abs(axis_y)) < AXIS2_THRESHOLD:
+        axis_y = 0
+
+    if (abs(r_axis_x)) < AXIS3_THRESHOLD:
+        r_axis_x = 0
+    if (abs(r_axis_y)) < AXIS4_THRESHOLD:
+        r_axis_y = 0
+
+    print('X: ' + str(axis_x) + '; Y:' + str(axis_y) + '  -  X2:' + str(r_axis_x) + '; Y2:' + str(r_axis_y))
     # Create a fixed-length text message to send to the server
-    msg = '%+2.2f %+2.2f %d*' % (axis_x, axis_y, autopilot)
+    #msg = '%+2.2f %+2.2f %d*' % (axis_x, axis_y, autopilot)
 
     # Send the message over the socket
-    sock.send(msg.encode())
+    #sock.send(msg.encode())
 
