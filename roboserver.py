@@ -120,7 +120,7 @@ if __name__ == '__main__':
         messages = client.recv(BUFSIZE).decode().split('*')
         for message in messages:
             parts = message.split()
-            if len(parts) == 3:
+            if len(parts) == 5:
                 values[0] = float(parts[0])
                 values[1] = float(parts[1])
                 values[2] = int(parts[2])
