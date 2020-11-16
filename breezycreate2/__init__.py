@@ -371,7 +371,8 @@ class _Create2(object):
             #Convert 16bit velocity to Hex
         else:
             noError = False
-            raise _ROIDataByteError("Invalid velocity input: " + str(velocity))
+            print("Error: Drive velocity overflow" + str(velocity))
+            raise _ROIDataByteError("Invalid velocity input")
         
         if radius == 32767 or radius == -1 or radius == 1:
             #Special case radius
