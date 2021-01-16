@@ -37,9 +37,10 @@ from time import sleep
 import socket
 import threading
 import RPi.GPIO as GPIO
+import os
 
 # These are sensible values for  RaspberryPi ad-hoc network
-HOST        = '192.168.87.32'
+HOST        = '192.168.87.29'
 PORT        = 20000
 BUFSIZE     = 100
 servoPIN_X  = 17
@@ -62,6 +63,9 @@ px = GPIO.PWM(servoPIN_X, 50) # GPIO 17 for PWM with 50Hz
 px.start(px_duty) # Initialization
 py = GPIO.PWM(servoPIN_Y, 50) # GPIO 18 for PWM with 50Hz
 py.start(py_duty) # Initialization
+
+def printIP():
+    os.system("hostname -I")
 
 def attemptOffset(isX, offset):
     global px_duty
@@ -123,7 +127,7 @@ def threadfunc(values):
         sleep(.01)
         
 if __name__ == '__main__':
-
+    printIP()
     # Listen for a client ------------------------------------------------------
     
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
