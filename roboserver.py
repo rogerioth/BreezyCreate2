@@ -36,7 +36,7 @@ from breezycreate2 import Robot
 from time import sleep
 import socket
 import threading
-import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
 import os
 
 # These are sensible values for  RaspberryPi ad-hoc network
@@ -56,56 +56,55 @@ py_duty     = 12
 MOTOR_MAX_ROTATION_SPEED    = 400
 MOTOR_MAX_FORWARD_SPEED     = 350
 
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(servoPIN_X, GPIO.OUT)
-GPIO.setup(servoPIN_Y, GPIO.OUT)
-px = GPIO.PWM(servoPIN_X, 50) # GPIO 17 for PWM with 50Hz
-px.start(px_duty) # Initialization
-py = GPIO.PWM(servoPIN_Y, 50) # GPIO 18 for PWM with 50Hz
-py.start(py_duty) # Initialization
+# GPIO.setmode(GPIO.BCM)
+# GPIO.setup(servoPIN_X, GPIO.OUT)
+# GPIO.setup(servoPIN_Y, GPIO.OUT)
+# px = GPIO.PWM(servoPIN_X, 50) # GPIO 17 for PWM with 50Hz
+# px.start(px_duty) # Initialization
+# py = GPIO.PWM(servoPIN_Y, 50) # GPIO 18 for PWM with 50Hz
+# py.start(py_duty) # Initialization
 
 def printIP():
     os.system("hostname -I")
 
-def attemptOffset(isX, offset):
-    global px_duty
-    global py_duty
+# def attemptOffset(isX, offset):
+#     global px_duty
+#     global py_duty
 
-    if isX:
-        predicted_x = px_duty + offset
-        if predicted_x > PX_MAX:
-            px_duty = PX_MAX
-        elif predicted_x < PX_MIN:
-            px_duty = PX_MIN
-        else:
-            px_duty = predicted_x
-    else:
-        predicted_y = py_duty + offset
-        if predicted_y > PY_MAX:
-            py_duty = PY_MAX
-        elif predicted_y < PY_MIN:
-            py_duty = PY_MIN
-        else:
-            py_duty = predicted_y
+#     if isX:
+#         predicted_x = px_duty + offset
+#         if predicted_x > PX_MAX:
+#             px_duty = PX_MAX
+#         elif predicted_x < PX_MIN:
+#             px_duty = PX_MIN
+#         else:
+#             px_duty = predicted_x
+#     else:
+#         predicted_y = py_duty + offset
+#         if predicted_y > PY_MAX:
+#             py_duty = PY_MAX
+#         elif predicted_y < PY_MIN:
+#             py_duty = PY_MIN
+#         else:
+#             py_duty = predicted_y
 
+# def handleTurret(turret_offset_x, turret_offset_y):
+#     global px_duty
+#     global py_duty
 
-def handleTurret(turret_offset_x, turret_offset_y):
-    global px_duty
-    global py_duty
+#     attemptOffset(True,  (turret_offset_x / 10))
+#     attemptOffset(False, (turret_offset_y / 10))
+#     #print('Turret - X:' + str(px_duty) + '; Y: ' + str(py_duty))
 
-    attemptOffset(True,  (turret_offset_x / 10))
-    attemptOffset(False, (turret_offset_y / 10))
-    #print('Turret - X:' + str(px_duty) + '; Y: ' + str(py_duty))
-
-    if abs(turret_offset_x) > 0.1:
-        print('Turret X offset: ' + str(turret_offset_x))
-        px.ChangeDutyCycle(px_duty)
+#     if abs(turret_offset_x) > 0.1:
+#         print('Turret X offset: ' + str(turret_offset_x))
+#         px.ChangeDutyCycle(px_duty)
     
-    if abs(turret_offset_y) > 0.1:
-        print('Turret Y offset: ' + str(turret_offset_y))
-        py.ChangeDutyCycle(py_duty)
+#     if abs(turret_offset_y) > 0.1:
+#         print('Turret Y offset: ' + str(turret_offset_y))
+#         py.ChangeDutyCycle(py_duty)
 
-    sleep(0.01)
+#     sleep(0.01)
 
 def threadfunc(values):
 
@@ -121,7 +120,8 @@ def threadfunc(values):
         else:
             bot.setForwardSpeed(MOTOR_MAX_FORWARD_SPEED*values[1])
 
-        handleTurret(values[3], values[4])
+        # Servo control
+        # handleTurret(values[3], values[4])
 
         # Yield to main thread
         sleep(.01)
@@ -129,6 +129,8 @@ def threadfunc(values):
 if __name__ == '__main__':
     printIP()
     # Listen for a client ------------------------------------------------------
+
+    exit(1) # for servo controller test
     
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
