@@ -29,7 +29,7 @@ def panel(stdscr, x, y, title, w, h):
 
     stdscr.addstr(y + h, x, c3 + "".join(map(lambda x: x*(w), ch)) + c4)
 
-def progress(stdscr, count, total, row, status=''):
+def progress(stdscr, count, total, row, status='', width=50):
     bar_len = 50
     filled_len = int(round(bar_len * count / float(total)))
 
@@ -39,6 +39,7 @@ def progress(stdscr, count, total, row, status=''):
     content = '[%s] %s%s ...%s\r' % (bar, percents, '%', status)
     stdscr.addstr(row, 4, content)
     # needs to re-add right border again
+    stdscr.addstr(row, width + 2, '|')
 
 def main(stdscr):
     ipconfig = '0.0.0.0'
@@ -46,8 +47,9 @@ def main(stdscr):
     stdscr.clear()
 
     height,width = stdscr.getmaxyx()
+    usableWindowWidth = width - 4
 
-    panel(stdscr, 1,1, 'Dashboard', width - 4, height - 4)
+    panel(stdscr, 1,1, 'Dashboard', usableWindowWidth, height - 4)
 
     stdscr.addstr(height - 4, 5, '' + ipconfig, curses.A_REVERSE)
     stdscr.refresh()
@@ -55,9 +57,9 @@ def main(stdscr):
     total = 1000
     i = 0
     while i < total:
-        progress(stdscr, i, total, 4, status='Doing very long job')
-        progress(stdscr, i, total, 5, status='Second bar')
-        time.sleep(0.01)  # emulating long-playing job
+        progress(stdscr, i, total, 4, status='Doing very long job', width=usableWindowWidth)
+        progress(stdscr, i, total, 5, status='Second bar', width=usableWindowWidth)
+        time.sleep(0.001)  # emulating long-playing job
         i += 1
         stdscr.refresh()
 
