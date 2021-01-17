@@ -4,6 +4,8 @@ import time
 import math
 import smbus
 import sys
+import tty
+import termios
 
 # ============================================================================
 # Raspi PCA9685 16-Channel PWM Servo Driver
@@ -107,9 +109,11 @@ class Servo:
       self.currentValue = self.range_min
     else:
       self.currentValue = previewValue
+    self.syncServoValue()
 
   def syncServoValue(self):
     self.controller.pwm.setServoPulse(self.servo_id, self.currentValue)
+    print("\nV:" + str(self.currentValue))
   
   def servoTestRange(self):
     print(f"Performing servo test on {self.name} - Channel {self.servo_id} - Max: {self.range_max} - Min: {self.range_min}")
@@ -130,16 +134,38 @@ class ServoController:
 
     #self.turretBase_h = Servo(0, 2500, 500, "turret.base.h", 500, controller=self)
     #self.turretBase_h.servoTestRange()
-    self.turretBase_y = Servo(testChannel, max, min, "turret.base.v", 500, controller=self)
-    self.turretBase_y.servoTestRange()
+    self.servo = Servo(testChannel, max, min, "turret.base.v", 500, controller=self)
+    #self.turretBase_y.servoTestRange()
 
 if __name__=='__main__':
-    # test args: servoId, max, min
-    print(sys.argv)
     servoId = int(sys.argv[1])
-    servoMax = int(sys.argv[2])
-    servoMin = int(sys.argv[3])
+    servoMax = 3000
+    servoMin = 0
     controller = ServoController(servoId, servoMax, servoMin)
+
+    fd = sys.stdin.fileno()
+    old_settings = termios.tcgetattr(fd)
+
+    tty.setraw(fd)
+    while 1:
+        ch = sys.stdin.read(1)
+        if ch == 'a':
+            controller.servo.servoOffset(10)
+            time.sleep(0.05)
+        if ch == 'd':
+            controller.servo.servoOffset(-10)
+            time.sleep(0.05)
+        if ch == 'q':
+            break
+
+    termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+
+    # test args: servoId, max, min
+    #print(sys.argv)
+    #servoId = int(sys.argv[1])
+    #servoMax = int(sys.argv[2])
+    #servoMin = int(sys.argv[3])
+    #controller = ServoController(servoId, servoMax, servoMin)
 
 #   pwm = PCA9685(0x40, debug=False)
 #   pwm.setPWMFreq(50)
