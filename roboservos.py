@@ -4,6 +4,8 @@ import time
 import math
 import smbus
 import sys
+import queue
+import threading
 
 # ============================================================================
 # Raspi PCA9685 16-Channel PWM Servo Driver
@@ -91,12 +93,13 @@ class Servo:
 
   __SERVO_STEP         = 10
 
-  def __init__(self, servo_id, range_max, range_min, name, initial_value, controller):
+  def __init__(self, servo_id, range_max, range_min, name, default_value, controller):
     self.range_max = range_max
     self.range_min = range_min
     self.servo_id = servo_id
     self.name = name
-    self.currentValue = initial_value
+    self.default_value = default_value
+    self.currentValue = default_value
     self.controller = controller
   
   def servoOffset(self, offset):
@@ -120,26 +123,42 @@ class Servo:
     
     for i in range(self.range_max, self.range_min, -self.__SERVO_STEP):
       self.controller.pwm.setServoPulse(self.servo_id, i)
-      time.sleep(0.02)  
+      time.sleep(0.02)
+    
+    self.currentValue = self.default_value
+    self.syncServoValue()
 
 class ServoController:
-  def __init__(self, testChannel, max, min):
+  def __init__(self):
     self.pwm = PCA9685(0x40, debug=False)
     self.pwm.setPWMFreq(50)
     # create all motors
 
-    #self.turretBase_h = Servo(0, 2500, 500, "turret.base.h", 500, controller=self)
-    #self.turretBase_h.servoTestRange()
-    self.turretBase_y = Servo(testChannel, max, min, "turret.base.v", 500, controller=self)
-    self.turretBase_y.servoTestRange()
+    self.camera_turret_v = Servo( 1, 2490, 1260, "camera_turret_v", 2200, controller=self)
+    self.camera_turret_h = Servo( 0, 2470,  660, "camera_turret_h", 1360, controller=self)
+    self.base_rotation   = Servo(15, 2320, 1200, "base_rotation", 970, controller=self)  # adjust with correct values
+    self.base_v_angle    = Servo(11, 1780,  570, "base_v_angle", 970, controller=self)
+    self.claw_rotation   = Servo(13, 2190,  580, "claw_rotation", 580, controller=self)
+    self.claw_angle      = Servo(14, 2290,  590, "claw_angle", controller=self)
+    self.claw            = Servo(12, 1500,  900, "claw", 900, controller=self)
+    self.arm_v_angle     = Servo(10, 2600, 1200, "arm_v_angle", 1900, controller=self)  # adjust default value
+
+    self.camera_turret_v.servoTestRange()
+    self.camera_turret_h.servoTestRange()
+    self.base_rotation.servoTestRange()
+    self.base_v_angle.servoTestRange()
+    self.claw_rotation.servoTestRange()
+    self.claw_angle.servoTestRange()
+    self.claw.servoTestRange()
+    self.arm_v_angle.servoTestRange()
 
 if __name__=='__main__':
-    # test args: servoId, max, min
-    print(sys.argv)
-    servoId = int(sys.argv[1])
-    servoMax = int(sys.argv[2])
-    servoMin = int(sys.argv[3])
-    controller = ServoController(servoId, servoMax, servoMin)
+    # # test args: servoId, max, min
+    # print(sys.argv)
+    # servoId = int(sys.argv[1])
+    # servoMax = int(sys.argv[2])
+    # servoMin = int(sys.argv[3])
+    controller = ServoController()
 
 #   pwm = PCA9685(0x40, debug=False)
 #   pwm.setPWMFreq(50)
