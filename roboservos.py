@@ -143,14 +143,14 @@ class ServoController:
     self.claw            = Servo(12, 1500,  900, "claw", 900, controller=self)
     self.arm_v_angle     = Servo(10, 2600, 1200, "arm_v_angle", 1900, controller=self)  # adjust default value
 
-    self.camera_turret_v.servoTestRange()
-    self.camera_turret_h.servoTestRange()
-    self.base_rotation.servoTestRange()
+    self.arm_v_angle.servoTestRange()
     self.base_v_angle.servoTestRange()
+    self.base_rotation.servoTestRange()
     self.claw_rotation.servoTestRange()
     self.claw_angle.servoTestRange()
     self.claw.servoTestRange()
-    self.arm_v_angle.servoTestRange()
+    self.camera_turret_v.servoTestRange()
+    self.camera_turret_h.servoTestRange()
 
 if __name__=='__main__':
     # # test args: servoId, max, min
