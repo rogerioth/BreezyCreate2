@@ -119,7 +119,7 @@ class Servo:
 
     for i in range(self.range_min, self.range_max, self.__SERVO_STEP):
       self.controller.pwm.setServoPulse(self.servo_id, i)
-      time.sleep(0.02)     
+      time.sleep(0.02)
     
     for i in range(self.range_max, self.range_min, -self.__SERVO_STEP):
       self.controller.pwm.setServoPulse(self.servo_id, i)
@@ -146,14 +146,23 @@ class ServoController:
     self.claw_angle      = Servo(15, 2180,  710, "claw_angle", 1520, controller=self)      # ok
     self.claw_rotation   = Servo(14, 2240,  510, "claw_rotation", 1220, controller=self)   # ok
 
-    self.arm_v_angle.servoTestRange()
-    self.base_v_angle.servoTestRange()
-    self.base_rotation.servoTestRange()
-    self.claw_rotation.servoTestRange()
-    self.claw_angle.servoTestRange()
-    self.claw.servoTestRange()
-    self.camera_turret_v.servoTestRange()
-    self.camera_turret_h.servoTestRange()
+    self.allMotors = [ self.base_v_angle,
+                       self.arm_v_angle,
+                       self.base_rotation,
+                       self.claw,
+                       self.camera_turret_v,
+                       self.camera_turret_h,
+                       self.claw_angle,
+                       self.claw_rotation
+                     ]
+
+    for servo in self.allMotors:
+      servo.syncServoValue()
+      time.sleep(1)
+
+    for servo in self.allMotors:
+      servo.servoTestRange()
+      time.sleep(0.5)
 
 if __name__=='__main__':
     # # test args: servoId, max, min
