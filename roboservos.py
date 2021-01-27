@@ -134,14 +134,17 @@ class ServoController:
     self.pwm.setPWMFreq(50)
     # create all motors
 
-    self.camera_turret_v = Servo( 1, 2490, 1260, "camera_turret_v", 2200, controller=self)
-    self.camera_turret_h = Servo( 0, 2470,  660, "camera_turret_h", 1360, controller=self)
-    self.base_rotation   = Servo(15, 2320, 1200, "base_rotation", 970, controller=self)  # adjust with correct values
-    self.base_v_angle    = Servo(11, 1780,  570, "base_v_angle", 970, controller=self)
-    self.claw_rotation   = Servo(13, 2190,  580, "claw_rotation", 580, controller=self)
-    self.claw_angle      = Servo(14, 2290,  590, "claw_angle", controller=self)
-    self.claw            = Servo(12, 1500,  900, "claw", 900, controller=self)
-    self.arm_v_angle     = Servo(10, 2600, 1200, "arm_v_angle", 1900, controller=self)  # adjust default value
+    self.base_v_angle    = Servo(13, 2280,  570, "base_v_angle", 1660, controller=self)    # ok
+    self.arm_v_angle     = Servo(12, 1510,  530, "arm_v_angle",  1010, controller=self)    # ok
+
+    self.base_rotation   = Servo( 0, 2210,  520, "base_rotation", 870, controller=self)    # ok
+    self.claw            = Servo( 1, 1460, 1020, "claw", 1260, controller=self)            # ok
+
+    self.camera_turret_v = Servo( 7, 2490, 1340, "camera_turret_v", 2280, controller=self) # ok
+    self.camera_turret_h = Servo( 6, 2410,  620, "camera_turret_h", 1440, controller=self) # ok
+
+    self.claw_angle      = Servo(15, 2180,  710, "claw_angle", 1520, controller=self)      # ok
+    self.claw_rotation   = Servo(14, 2240,  510, "claw_rotation", 1220, controller=self)   # ok
 
     self.arm_v_angle.servoTestRange()
     self.base_v_angle.servoTestRange()
