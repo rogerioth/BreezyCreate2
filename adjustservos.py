@@ -6,6 +6,8 @@ import smbus
 import sys
 import tty
 import termios
+import curses
+from curses import wrapper
 
 # ============================================================================
 # Raspi PCA9685 16-Channel PWM Servo Driver
@@ -101,7 +103,7 @@ class Servo:
     self.currentValue = initial_value
     self.controller = controller
   
-  def servoOffset(self, offset):
+  def servoOffset(self, offset, stdscr):
     previewValue = self.currentValue + offset
     if previewValue > self.range_max:
       self.currentValue = self.range_max
@@ -109,56 +111,66 @@ class Servo:
       self.currentValue = self.range_min
     else:
       self.currentValue = previewValue
-    self.syncServoValue()
+    self.syncServoValue(stdscr)
 
-  def syncServoValue(self):
+  def syncServoValue(self, stdscr):
     self.controller.pwm.setServoPulse(self.servo_id, self.currentValue)
-    print("\nV:" + str(self.currentValue))
+    stdscr.clear()
+    stdscr.addstr(1, 1, "V:" + str(self.currentValue))
+    stdscr.refresh()
   
   def servoTestRange(self):
     print(f"Performing servo test on {self.name} - Channel {self.servo_id} - Max: {self.range_max} - Min: {self.range_min}")
 
     for i in range(self.range_min, self.range_max, self.__SERVO_STEP):
       self.controller.pwm.setServoPulse(self.servo_id, i)
-      time.sleep(0.02)     
+      time.sleep(0.002)     
     
     for i in range(self.range_max, self.range_min, -self.__SERVO_STEP):
       self.controller.pwm.setServoPulse(self.servo_id, i)
-      time.sleep(0.02)  
+      time.sleep(0.002)  
 
 class ServoController:
-  def __init__(self, testChannel, max, min):
+  def __init__(self, testChannel, max, min, start):
     self.pwm = PCA9685(0x40, debug=False)
     self.pwm.setPWMFreq(50)
     # create all motors
 
     #self.turretBase_h = Servo(0, 2500, 500, "turret.base.h", 500, controller=self)
     #self.turretBase_h.servoTestRange()
-    self.servo = Servo(testChannel, max, min, "turret.base.v", 500, controller=self)
+    self.servo = Servo(testChannel, max, min, "testing", start, controller=self)
     #self.turretBase_y.servoTestRange()
 
-if __name__=='__main__':
+def main(stdscr):
+#if __name__=='__main__':
     servoId = int(sys.argv[1])
+    startingValue = int(sys.argv[2])
     servoMax = 3000
     servoMin = 0
-    controller = ServoController(servoId, servoMax, servoMin)
+    controller = ServoController(servoId, servoMax, servoMin, startingValue)
 
     fd = sys.stdin.fileno()
     old_settings = termios.tcgetattr(fd)
+
+    stdscr = curses.initscr()
+    stdscr.clear()
 
     tty.setraw(fd)
     while 1:
         ch = sys.stdin.read(1)
         if ch == 'a':
-            controller.servo.servoOffset(10)
-            time.sleep(0.05)
+            controller.servo.servoOffset(10, stdscr)
+            time.sleep(0.005)
         if ch == 'd':
-            controller.servo.servoOffset(-10)
-            time.sleep(0.05)
+            controller.servo.servoOffset(-10, stdscr)
+            time.sleep(0.005)
         if ch == 'q':
             break
 
     termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+    curses.endwin()
+
+wrapper(main)
 
     # test args: servoId, max, min
     #print(sys.argv)
