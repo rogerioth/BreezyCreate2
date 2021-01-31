@@ -36,6 +36,10 @@ class Panel:
         self.stdscr.addstr(self.y + self.h, self.x, self.c3 + "".join(map(lambda x: x*(self.w), self.ch)) + self.c4)
 
 class ProgressBar:
+    # x                  x+w
+    # [========-----------]
+    # 74.5% Status
+
     def __init__(self, stdscr, x, y, title, w=50):
         self.stdscr = stdscr
         self.x = x
@@ -49,11 +53,12 @@ class ProgressBar:
 
         percents = round(100.0 * progress / float(max), 1)
         bar = '=' * filled_len + '-' * (bar_len - filled_len)
+        self.stdscr.addstr(self.y, self.x, '[' + bar + ']')
 
-        content = '[%s] %s%s ...%s\r' % (bar, percents, '%', status)
-        self.stdscr.addstr(self.y, 4, content)
+        statusLabel = '%s%s ...%s\r' % (bar, percents, '%', status)
+        self.stdscr.addstr(self.y + 1, self.x, statusLabel)
         # needs to re-add right border again
-        self.stdscr.addstr(self.y, self.w, '|')
+        # self.stdscr.addstr(self.y, self.w, '|')
 
 def execute(cmd, parameters):
     result = subprocess.run([cmd, parameters], capture_output=True, text=True).stdout
