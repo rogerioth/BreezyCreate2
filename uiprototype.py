@@ -4,11 +4,7 @@ import curses
 from curses import wrapper
 import subprocess
 
-def execute(cmd, parameters):
-    result = subprocess.run([cmd, parameters], capture_output=True, text=True).stdout
-    return result
-
-def panel(stdscr, x, y, title, w, h):
+class Panel:
     c1 = '┌'
     c2 = '┐'
     c3 = '└'
@@ -18,47 +14,73 @@ def panel(stdscr, x, y, title, w, h):
     sp = ' '
     titleStart = '['
     titleEnd = ']'
-    fullTitle = titleStart + title + titleEnd
-    titleLen = len(fullTitle)
-    vTopBar = "".join(map(lambda x: x*(w - titleLen - 1), ch)) + c2
-    stdscr.addstr(y, x, c1 + ch + fullTitle + vTopBar)
 
-    for i in range(1, h):
-        filling = "".join(map(lambda x: x*(w), sp))
-        stdscr.addstr(y + i, x, cv + filling + cv)
+    def __init__(self, stdscr, x, y, title, w, h):
+        self.stdscr = stdscr
+        self.x = x
+        self.y = y
+        self.title = title
+        self.w = w
+        self.h = h
+    
+    def render(self):
+        fullTitle = self.titleStart + self.title + self.titleEnd
+        titleLen = len(fullTitle)
+        vTopBar = "".join(map(lambda x: x*(self.w - titleLen - 1), self.ch)) + self.c2
+        self.stdscr.addstr(self.y, self.x, self.c1 + self.ch + fullTitle + vTopBar)
 
-    stdscr.addstr(y + h, x, c3 + "".join(map(lambda x: x*(w), ch)) + c4)
+        for i in range(1, self.h):
+            filling = "".join(map(lambda x: x*(self.w), self.sp))
+            self.stdscr.addstr(self.y + i, self.x, self.cv + filling + self.cv)
 
-def progress(stdscr, count, total, row, status='', width=50):
-    bar_len = 50
-    filled_len = int(round(bar_len * count / float(total)))
+        self.stdscr.addstr(self.y + self.h, self.x, self.c3 + "".join(map(lambda x: x*(self.w), self.ch)) + self.c4)
 
-    percents = round(100.0 * count / float(total), 1)
-    bar = '=' * filled_len + '-' * (bar_len - filled_len)
+class ProgressBar:
+    def __init__(self, stdscr, x, y, title, w=50):
+        self.stdscr = stdscr
+        self.x = x
+        self.y = y
+        self.title = title
+        self.w = w
 
-    content = '[%s] %s%s ...%s\r' % (bar, percents, '%', status)
-    stdscr.addstr(row, 4, content)
-    # needs to re-add right border again
-    stdscr.addstr(row, width + 2, '|')
+    def render(self, max, progress, status=''):
+        bar_len = self.w - 2
+        filled_len = int(round(bar_len * progress / float(max)))
+
+        percents = round(100.0 * progress / float(max), 1)
+        bar = '=' * filled_len + '-' * (bar_len - filled_len)
+
+        content = '[%s] %s%s ...%s\r' % (bar, percents, '%', status)
+        self.stdscr.addstr(self.y, 4, content)
+        # needs to re-add right border again
+        self.stdscr.addstr(self.y, self.w, '|')
+
+def execute(cmd, parameters):
+    result = subprocess.run([cmd, parameters], capture_output=True, text=True).stdout
+    return result
 
 def main(stdscr):
-    ipconfig = '0.0.0.0'
+    #ipconfig = '0.0.0.0'
     stdscr = curses.initscr()
     stdscr.clear()
 
     height,width = stdscr.getmaxyx()
     usableWindowWidth = width - 4
 
-    panel(stdscr, 1,1, 'Dashboard', usableWindowWidth, height - 4)
+    mainPanel = Panel(stdscr, 1, 1, 'Dashboard', usableWindowWidth, height - 4)
+    mainPanel.render()
 
-    stdscr.addstr(height - 4, 5, '' + ipconfig, curses.A_REVERSE)
-    stdscr.refresh()
+    #STATUS BAR: stdscr.addstr(height - 4, 5, '' + ipconfig, curses.A_REVERSE)
+    #stdscr.refresh()
+
+    p1 = ProgressBar(stdscr, 3, 4, 'Job 1', usableWindowWidth - 4)
+    p2 = ProgressBar(stdscr, 3, 5, 'Job 1', usableWindowWidth - 4)
 
     total = 1000
     i = 0
     while i < total:
-        progress(stdscr, i, total, 4, status='Doing very long job', width=usableWindowWidth)
-        progress(stdscr, i, total, 5, status='Second bar', width=usableWindowWidth)
+        p1.render(1000, i, 'axis')
+        p2.render(1000, i, 'axis')
         time.sleep(0.001)  # emulating long-playing job
         i += 1
         stdscr.refresh()
