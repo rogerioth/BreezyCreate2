@@ -55,7 +55,7 @@ class ProgressBar:
         bar = '=' * filled_len + '-' * (bar_len - filled_len)
         self.stdscr.addstr(self.y, self.x, '[' + bar + ']')
 
-        statusLabel = '%s%s ...%s\r' % (bar, percents, '%', status)
+        statusLabel = '%s%s ...%s\r' % (percents, '%', status)
         self.stdscr.addstr(self.y + 1, self.x, statusLabel)
         # needs to re-add right border again
         # self.stdscr.addstr(self.y, self.w, '|')
@@ -79,7 +79,7 @@ def main(stdscr):
     #stdscr.refresh()
 
     p1 = ProgressBar(stdscr, 3, 4, 'Job 1', usableWindowWidth - 4)
-    p2 = ProgressBar(stdscr, 3, 5, 'Job 1', usableWindowWidth - 4)
+    p2 = ProgressBar(stdscr, 3, 7, 'Job 1', usableWindowWidth - 4)
 
     total = 1000
     i = 0
