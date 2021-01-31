@@ -35,6 +35,10 @@ class Panel:
 
         self.stdscr.addstr(self.y + self.h, self.x, self.c3 + "".join(map(lambda x: x*(self.w), self.ch)) + self.c4)
 
+    def renderStatusBar(self, content, x):
+        self.stdscr.addstr(self.y + self.h, self.x + x, content, curses.A_REVERSE)
+        self.stdscr.refresh()
+
 class ProgressBar:
     # x                  x+w
     # [========-----------]
@@ -55,17 +59,15 @@ class ProgressBar:
         bar = '=' * filled_len + '-' * (bar_len - filled_len)
         self.stdscr.addstr(self.y, self.x, '[' + bar + ']')
 
-        statusLabel = '%s%s ...%s\r' % (percents, '%', status)
+        statusLabel = '%s%s %s\r' % (percents, '%', status)
         self.stdscr.addstr(self.y + 1, self.x, statusLabel)
-        # needs to re-add right border again
-        # self.stdscr.addstr(self.y, self.w, '|')
 
 def execute(cmd, parameters):
     result = subprocess.run([cmd, parameters], capture_output=True, text=True).stdout
     return result
 
 def main(stdscr):
-    #ipconfig = '0.0.0.0'
+    ipconfig = '0.0.0.0'
     stdscr = curses.initscr()
     stdscr.clear()
 
@@ -74,12 +76,10 @@ def main(stdscr):
 
     mainPanel = Panel(stdscr, 1, 1, 'Dashboard', usableWindowWidth, height - 4)
     mainPanel.render()
-
-    #STATUS BAR: stdscr.addstr(height - 4, 5, '' + ipconfig, curses.A_REVERSE)
-    #stdscr.refresh()
+    mainPanel.renderStatusBar(ipconfig, 3)
 
     p1 = ProgressBar(stdscr, 3, 4, 'Job 1', usableWindowWidth - 4)
-    p2 = ProgressBar(stdscr, 3, 7, 'Job 1', usableWindowWidth - 4)
+    p2 = ProgressBar(stdscr, 3, 7, 'Job 2', usableWindowWidth - 4)
 
     total = 1000
     i = 0
